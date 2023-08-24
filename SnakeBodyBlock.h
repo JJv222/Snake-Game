@@ -2,26 +2,19 @@
 #include "Menu.h"
 struct  SnakeBodyBlock : public sf::Sprite
 {
-	short int rotation;
-	char direction;
+	char direction, nextdirection;
+	bool rotation;
+	bool FirstMove;
+	sf::Vector2f RotationPoint;
 
 	SnakeBodyBlock() {
 		rotation = 0;
 		direction = ' ';
+		nextdirection = ' ';
+		FirstMove = false;
 	}
-	void Rotate() {
-		if (direction == 'w') {
-			this->setRotation(0);
-		}
-		else if (direction == 'a') {
-			this->setRotation(90);
-		}
-		else if (direction == 's') {
-			this->setRotation(270);
-		}
-		else if (direction == 'd') {
-			this->setRotation(300);
-		}
+	void setDirection(char dir) {
+		direction = dir;
 	}
 };
 

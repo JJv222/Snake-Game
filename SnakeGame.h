@@ -10,18 +10,21 @@ private:
 
 	sf::Texture PiecesImage;
 	sf::Sprite PointSprite;
-	SnakeBodyBlock SnakeHead;
-
-	std::vector <SnakeBodyBlock> SnakeBody;
+	SnakeBodyBlock SnakeHead, SnakeMidle, SnakeTail;
+	std::vector <SnakeBodyBlock*> SnakeBody;
+	unsigned short int RefreshLimit;
 
 	void CreatePieces();
 	void CreateTexts();
 
 public:
 
-	SnakeGame(sf::Vector2f);
+	SnakeGame(sf::Vector2f WindowSize);
 	~SnakeGame();
 	bool Display();
-	void SnakeMoving(sf::Event* event);
+	void HeadChangeDirection(sf::Event* event);
+	void SnakeMoving();
+	void SnakeDirectionChange();
+	void SnakeTextureUpdate();
 };
 
