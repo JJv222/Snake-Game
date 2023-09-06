@@ -4,6 +4,7 @@
 #include <SFML/Window.hpp>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 class Menu
 {

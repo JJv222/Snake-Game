@@ -2,19 +2,22 @@
 #include "Menu.h"
 struct  SnakeBodyBlock : public sf::Sprite
 {
-	char direction, nextdirection;
-	bool rotation;
+	std::vector<char> directions;
+	std::vector<char> nextdirections;
 	bool FirstMove;
-	sf::Vector2f RotationPoint;
+	std::vector <sf::Vector2f> RotationPoints;
 
 	SnakeBodyBlock() {
-		rotation = 0;
-		direction = ' ';
-		nextdirection = ' ';
 		FirstMove = false;
+		directions.push_back('k');
+		nextdirections.push_back('k');
+		RotationPoints.push_back(sf::Vector2f(-50, -50));
+
 	}
-	void setDirection(char dir) {
-		direction = dir;
+	virtual ~SnakeBodyBlock() {
+		directions.clear();
+		nextdirections.clear();
+		RotationPoints.clear();
 	}
 };
 

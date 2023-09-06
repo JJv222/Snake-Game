@@ -29,6 +29,8 @@ void SnakeGame::CreatePieces() {
 	SnakeHead.setTextureRect(sf::IntRect (256, 0, 64, 64));
 	SnakeHead.setPosition(0, 0);
 	SnakeHead.FirstMove = true;
+	SnakeHead.directions.push_back('d');
+	SnakeHead.nextdirections.push_back('d');
 	SnakeBody.push_back(&SnakeHead);
 
 
@@ -42,72 +44,102 @@ void SnakeGame::CreateTexts() {
 	PointsText.setPosition(10, 10);
 }
 void SnakeGame::HeadChangeDirection(sf::Event* event) {
-	if (event->type == sf::Event::KeyPressed && event->key.code == sf::Keyboard::Up) {
-		SnakeHead.direction = 'w';
+	if (event->type == sf::Event::KeyPressed) {
+		switch (event->key.code)
+		{
+		case sf::Keyboard::Up: {
+			SnakeHead.nextdirections.pop_back();
+			SnakeHead.nextdirections.push_back('w');
+			break; }
+		case sf::Keyboard::Right: {
+			SnakeHead.nextdirections.pop_back();
+			SnakeHead.nextdirections.push_back('d');
+			break; }
+		case sf::Keyboard::Left: {
+			SnakeHead.nextdirections.pop_back();
+			SnakeHead.nextdirections.push_back('a');
+			break; }
+		case sf::Keyboard::Down: {
+			SnakeHead.nextdirections.pop_back();
+			SnakeHead.nextdirections.push_back('s');
+			break; }
+		default:
+			break;
+		}
 	}
-	else if (event->type == sf::Event::KeyPressed && event->key.code == sf::Keyboard::Right) {
-		SnakeHead.direction = 'd';
-	}
-	else if (event->type == sf::Event::KeyPressed && event->key.code == sf::Keyboard::Left) {
-		SnakeHead.direction = 'a';
-	}
-	else if (event->type == sf::Event::KeyPressed && event->key.code == sf::Keyboard::Down) {
-		SnakeHead.direction = 's';
-	}
-
 }
 void SnakeGame::SnakeDirectionChange() {
-	for (int j = 1; j <= SnakeBody.size() - 1; j++) {
+	for (int j = 1; j < SnakeBody.size(); j++) {
 		if (!SnakeBody[j]->FirstMove) {
 			int deltaX = abs(int(SnakeBody[j]->getPosition().x - SnakeBody[SnakeBody.size() - 2]->getPosition().x));
 			int deltaY = abs(int(SnakeBody[j]->getPosition().y - SnakeBody[SnakeBody.size() - 2]->getPosition().y));
-			std::cout << deltaX << " " << deltaY << std::endl;
 			if (deltaX == 64  || deltaY == 64) {
 				SnakeBody[j]->FirstMove = true;
-				std::cout << " wtf " ;
 			}
 		}
-		if (j == 1) {
+	/*	if (j == 1) {
+			if (SnakeBody[0]->nextdirections.front() != SnakeBody[0]->directions.front()) {
+				SnakeBody[0]->directions.front() = SnakeBody[0]->nextdirections.front();
 
-			if (SnakeBody[0]->nextdirection != SnakeBody[0]->direction) {
-				SnakeBody[0]->nextdirection = SnakeBody[0]->direction;
+				SnakeBody[1]->nextdirections.push_back(SnakeBody[0]->directions.front());
+				SnakeBody[1]->RotationPoints.push_back(SnakeBody[0]->getPosition());
+			}
+			
+			
+		} */
+	//	std::cout <<"next dir: " << SnakeBody[1]->nextdirections.front() << " dir: " << SnakeBody[1]->directions.front() <<" pos : " << SnakeBody[1]->getPosition().x << "  " << SnakeBody[1]->getPosition().y << " Rotation:" << SnakeBody[1]->RotationPoints.front().x << "  " << SnakeBody[1]->RotationPoints.front().y << std::endl;
+		if (SnakeBody[j]->RotationPoints.size() > 1 && SnakeBody[j]->RotationPoints[1] == SnakeBody[j]->getPosition() ) {
 
-				SnakeBody[1]->nextdirection = SnakeBody[0]->direction;
-				SnakeBody[1]->RotationPoint = SnakeBody[0]->getPosition();
+			SnakeBody[j]->directions[1] = SnakeBody[j]->nextdirections[1]; //change direction
+			SnakeBody[j]->RotationPoints.erase(SnakeBody[j]->RotationPoints.begin() + 1); //delete first rotation point
+			SnakeBody[j]->nextdirections.erase(SnakeBody[j]->nextdirections.begin()+1); //delete first next direction
+
+			if ((j + 1) < SnakeBody.size()) {
+				SnakeBody[j + 1]->nextdirections.push_back(SnakeBody[j]->directions[1]);
+				SnakeBody[j + 1]->RotationPoints.push_back(SnakeBody[j]->getPosition());
 			}
 		}
-		if ( SnakeBody[j]->RotationPoint == SnakeBody[j]->getPosition()) {
-			SnakeBody[j]->direction= SnakeBody[j]->nextdirection; 
-			if ((j + 1) <= (SnakeBody.size() - 1)) {
-				SnakeBody[j + 1]->nextdirection = SnakeBody[j]->direction;
-				SnakeBody[j + 1]->RotationPoint = SnakeBody[j]->getPosition();
-			}
-		}
+
 	}
 }
 void SnakeGame::SnakeMoving() {
+
 	sf::Vector2f LastPosition = SnakeBody[SnakeBody.size() - 1]->getPosition();
 	//move snake body on the map
-	for (SnakeBodyBlock* i : SnakeBody) {
-		if (i->FirstMove) {
-			if (i->direction == 'w') i->move(0, -4);
-			else if (i->direction == 'a') i->move(-4, 0);
-			else if (i->direction == 's') i->move(0, 4);
-			else if (i->direction == 'd') i->move(4, 0);
+	for (int i = 0; i < SnakeBody.size(); i++) {
+		if (i==0) {
+			int deltaX = abs(int(SnakeHead.getPosition().x)) % 64;
+			int deltaY = abs(int(SnakeHead.getPosition().y)) % 64;			
+			if (deltaY == 0 && deltaX ==0) {
+				if ( SnakeBody.size() > 1) {
+					if ( SnakeHead.directions[1] != SnakeHead.nextdirections[1]) {
+						SnakeBody[1]->nextdirections.push_back(SnakeHead.nextdirections[1]);
+						SnakeBody[1]->RotationPoints.push_back(SnakeHead.getPosition());
+					}
+				}
+				SnakeHead.directions[1] = SnakeHead.nextdirections[1];
+			}
+		}
+		if (SnakeBody[i]->FirstMove) {
+			if (SnakeBody[i]->directions[1] == 'w') SnakeBody[i]->move(0, -4);
+			else if (SnakeBody[i]->directions[1] == 'a') SnakeBody[i]->move(-4, 0);
+			else if (SnakeBody[i]->directions[1] == 's') SnakeBody[i]->move(0, 4);
+			else if (SnakeBody[i]->directions[1] == 'd') SnakeBody[i]->move(4, 0);
 		}
 	}
 	//eat point
 
 	if (SnakeHead.getGlobalBounds().intersects(PointSprite.getGlobalBounds())) {
+		std::cout << "POINT";
 		SnakeBodyBlock* newBlock = new SnakeBodyBlock();
 		newBlock->setTexture(PiecesImage);
 		newBlock->setTextureRect(sf::IntRect(64, 0, 64, 64));
 		newBlock->setPosition(LastPosition);
-		newBlock->direction = SnakeBody[SnakeBody.size() - 1]->direction;
-		newBlock->nextdirection = SnakeBody[SnakeBody.size() - 1]->direction;
-		newBlock->RotationPoint = LastPosition;
+
+		newBlock->directions.push_back(SnakeBody[SnakeBody.size() - 1]->directions[1]);
 		SnakeBody.push_back(newBlock);
 
+	//Create new point on the map
 		bool isPointOnSnake = false;
 		PointSprite.setPosition(rand() % 1000, rand() % 800);
 		while (isPointOnSnake) {
@@ -122,7 +154,7 @@ void SnakeGame::SnakeMoving() {
 void SnakeGame::SnakeTextureUpdate() {
 	//update snake texture
 	for (SnakeBodyBlock* i : SnakeBody) {
-		switch (i->direction)
+		switch (i->directions[1])
 		{
 		case 'w':
 			i->setTextureRect(sf::IntRect(192, 0, 64, 64));
@@ -152,9 +184,8 @@ bool SnakeGame::Display()
 		SnakeMoving(); //move snake
 		while (window->pollEvent(event))
 		{
-			if (event.type == sf::Event::Closed) {
+			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
 				window->close();
-				std::cout << "koniec gry ";
 				return false;
 			}
 			HeadChangeDirection(&event);//game logic and update
