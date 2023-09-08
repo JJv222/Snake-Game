@@ -3,7 +3,7 @@
 Menu::Menu(sf::Vector2f WindowSize) // Inicjalizujemy referencjê do okna
 {
     //window
-    window = new sf::RenderWindow(sf::VideoMode(WindowSize.x, WindowSize.y), "Gra");
+    window = new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(WindowSize.x), static_cast<unsigned int>(WindowSize.y)), "Gra");
 
     //font and text
     Mainfont.loadFromFile("Textures/arial.ttf");
@@ -40,7 +40,7 @@ bool Menu::Display()
                 return false;
             }
             if (event.type == sf::Event::MouseButtonPressed) {
-                if (ButtonPlay.getGlobalBounds().contains(sf::Vector2f(event.mouseButton.x, event.mouseButton.y)))
+                if (ButtonPlay.getGlobalBounds().contains(sf::Vector2f(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y))))
                 {
                     std::cout << "witam";
                     window->close();
@@ -57,4 +57,5 @@ bool Menu::Display()
 
         window->display();///
     }
+    return true;
 }
