@@ -3,9 +3,10 @@
 SnakeGame::SnakeGame(sf::Vector2f WindowSize)
 {
 	window = new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(WindowSize.x), static_cast<unsigned int>(WindowSize.y)), "Snake the game by JJ222");
-	RefreshLimit = 60;
+	window->setFramerateLimit(3);
 	CreatePieces();
 	CreateTexts();
+	Points = 0;
 }
 
 SnakeGame::~SnakeGame()
@@ -46,11 +47,12 @@ void SnakeGame::CreatePieces() {
 	Background.move(30, 40);
 }
 void SnakeGame::CreateTexts() {
-	Mainfont.loadFromFile("Textures/arial.ttf");
+	Mainfont.loadFromFile("Textures/Lobster_1.3.otf");
 	PointsText.setFont(Mainfont);
-	PointsText.setCharacterSize(24);
+	PointsText.setCharacterSize(40);
 	PointsText.setFillColor(sf::Color::White);
-	PointsText.setPosition(10, 10);
+	PointsText.setOutlineThickness(0.5f);
+	PointsText.setPosition(640, 580);
 }
 void SnakeGame::HeadChangeDirection(sf::Event* event) {
 	if (event->type == sf::Event::KeyPressed) {
@@ -136,6 +138,7 @@ void SnakeGame::SnakeMoving() {
 	}
 	//eat point
 	if (SnakeHead.getGlobalBounds().intersects(PointSprite.getGlobalBounds())) {
+		Points++;
 		SnakeBodyBlock* newBlock = new SnakeBodyBlock();
 		newBlock->setTexture(PiecesImage);
 		newBlock->setTextureRect(sf::IntRect(64, 0, 64, 64));
@@ -239,19 +242,23 @@ bool SnakeGame::SnakeCollision() {
 	// Brak kolizji
 	return false;
 }
-
+ bool SnakeGame::PointsUpdate(){
+	 if (Points >= 77) return true;
+	 PointsText.setString("Points: " + std::to_string(Points));
+}
 bool SnakeGame::Display()
 {
 
-	unsigned int timer = 0;
 	while (window->isOpen())
 	{
 		sf::Event event;
-		if (timer == 3500000) {
-			if (SnakeCollision()) return false; //check collision
-			SnakeMoving(); //move snake
-			SnakeTextureUpdate(); //update snake texture
+		if (SnakeCollision()) return false; //check collision
+		SnakeMoving(); //move snake
+		if (PointsUpdate()) {
+			std::cout << "You win the Snake Game by JJ222 !!!"<< std::endl;
+			return 0;
 		}
+		SnakeTextureUpdate(); //update snake texture
 		while (window->pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
@@ -261,21 +268,18 @@ bool SnakeGame::Display()
 			HeadChangeDirection(&event);//game logic and update
 
 		}
-		if (timer == 3500000) {
-			SnakeDirectionChange();		//move snake 
-
-			window->clear();		//draw
-			window->draw(Ground);
-			for (int i = 1; i < SnakeBody.size(); i++) {
-				window->draw(*SnakeBody[i]);
-			}
-			window->draw(SnakeHead);
-			window->draw(PointSprite);
-			window->draw(BorderSprite);
-			window->display();
+		SnakeDirectionChange();		//chagne snake direction
+		window->clear();		//draw
+		window->draw(Ground);
+		for (int i = 1; i < SnakeBody.size(); i++) {
+			window->draw(*SnakeBody[i]);
 		}
-		if(timer==3500000)timer = 0;
-		timer++;
+		window->draw(SnakeHead);
+		window->draw(PointSprite);
+		window->draw(BorderSprite);
+		window->draw(PointsText);
+		window->display();
 	}
+	std::cout << "Game over \n Points: "<<Points << std::endl;
 	return 0;
 }

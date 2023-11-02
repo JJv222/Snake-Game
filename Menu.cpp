@@ -6,7 +6,7 @@ Menu::Menu(sf::Vector2f WindowSize) // Inicjalizujemy referencjê do okna
     window = new sf::RenderWindow(sf::VideoMode(static_cast<unsigned int>(WindowSize.x), static_cast<unsigned int>(WindowSize.y)), "Gra");
 
     //font and text
-    Mainfont.loadFromFile("Textures/arial.ttf");
+    Mainfont.loadFromFile("Textures/Lobster_1.3.otf");
     MainText.setFont(Mainfont);
     MainText.setString("Snake the game by JJ222");
     MainText.setFillColor(sf::Color::Blue);
@@ -20,6 +20,12 @@ Menu::Menu(sf::Vector2f WindowSize) // Inicjalizujemy referencjê do okna
     ButtonPlay.setFillColor(sf::Color::Green);
     ButtonPlay.setPosition(210, 100);
 
+    //button exit
+    ButtonExit.setFont(Mainfont);
+    ButtonExit.setString("Exit");
+    ButtonExit.setCharacterSize(24);
+    ButtonExit.setFillColor(sf::Color::Green);
+    ButtonExit.setPosition(210, 170);
 
 }
 
@@ -42,9 +48,13 @@ bool Menu::Display()
             if (event.type == sf::Event::MouseButtonPressed) {
                 if (ButtonPlay.getGlobalBounds().contains(sf::Vector2f(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y))))
                 {
-                    std::cout << "witam";
                     window->close();
                     return true;
+                }
+                if (ButtonExit.getGlobalBounds().contains(sf::Vector2f(static_cast<float>(event.mouseButton.x), static_cast<float>(event.mouseButton.y))))
+                {
+                    window->close();
+                    return false;
                 }
             }
         }
@@ -53,6 +63,7 @@ bool Menu::Display()
 
         window->draw(MainText);                    ///draw window here
         window->draw(ButtonPlay);
+        window->draw(ButtonExit);
 
 
         window->display();///

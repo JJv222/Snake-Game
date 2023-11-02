@@ -7,20 +7,27 @@ private:
 	sf::RenderWindow* window;
 	sf::Font Mainfont;
 	sf::Text PointsText;
-	char HeadLastDirection;
+	
 
 	sf::Texture PiecesImage;
 	sf::Texture BorderImage;
+
 	sf::Sprite BorderSprite; //745x594 px
 	sf::Sprite PointSprite;
+
 	sf::RectangleShape Background;
 	sf::RectangleShape Ground;
+
 	SnakeBodyBlock SnakeHead, SnakeMidle, SnakeTail;
 	std::vector <SnakeBodyBlock*> SnakeBody, SnakeBodyBuffer;
+
 	unsigned short int RefreshLimit;
+	char HeadLastDirection;
+	unsigned short int Points;
 
 	void CreatePieces();
 	void CreateTexts();
+	bool PointsUpdate();
 
 public:
 

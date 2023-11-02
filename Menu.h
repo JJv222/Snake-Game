@@ -13,6 +13,7 @@ private:
 
     sf::Text MainText;
     sf::Text ButtonPlay;
+    sf::Text ButtonExit;
     sf::Font Mainfont;
 
 
